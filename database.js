@@ -1,5 +1,5 @@
 
-const books = [
+let books = [
     {
     ISBN: "12345Book",
     title: "Getting Started With C Programming",
@@ -7,7 +7,7 @@ const books = [
     language: "en",
     numPage: 250,
     author: [1, 2],
-    publications: [1],
+    publications: 1,
     category: ["technical", "Engineering", "Education"]
 
     },
@@ -17,8 +17,8 @@ const books = [
         pubDate: "2021-13-07",
         language: "en",
         numPage: 250,
-        author: [1, 2],
-        publications: [],
+        author: [2],
+        publications: 2,
         category: ["technical", "Engineering", "Education"]
     
     },

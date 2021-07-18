@@ -295,7 +295,105 @@ booky.put("/publications/update/book/:isbn", (request, response) => {
     });
 
     return response.json({ books: database.books, publications: database.publications });
-})
+});
+
+
+//////// ******* DELETE METHOD ************
+
+// Delete Book from Database
+/*
+Route :             /book/delete
+Description :       Delete Book
+Access :            PUBLIC 
+Parameter :         book ISBN
+Methods :           DELETE
+*/
+
+booky.delete("/book/delete/:isbn", (request, response) => {
+    const updatedBookDatabase = database.books.filter((book) => 
+        book.ISBN !== request.params.isbn
+    );
+    database.books = updatedBookDatabase;
+    return response.json({ books: database.books });
+});
+
+
+// Delete Author from a book
+/*
+Route :             /book/delete/author
+Description :       Delete author from a book 
+Access :            PUBLIC 
+Parameter :         book ISBN , author ID
+Methods :           DELETE
+*/
+
+booky.delete("/book/delete/author/:isbn/:authorID", (request, response) => {
+    
+    //update author array in Book database
+
+    database.books.forEach((book) => {
+        if (book.ISBN === request.params.isbn) {
+            const newAuthorList = book.author.filter((author) => author !== parseInt(request.params.authorID));
+            book.author = newAuthorList;
+            return;
+        } else {
+            console.log("Not found");
+        }
+
+
+    });
+
+    // update the author database
+    database.author.forEach((author) => {
+        if (author.id === parseInt(request.params.authorID)) {
+            const newBookList = author.books.filter((book) => book !== request.params.isbn);
+            author.books = newBookList;
+            return;
+        }
+    });
+
+    return response.json({ books: database.books, author: database.author });
+});
+
+
+// Delete boom from Publications
+/*
+Route :             /publication/delete/book
+Description :        Delete boom from Publications 
+Access :            PUBLIC 
+Parameter :         book ISBN , Publication ID
+Methods :           DELETE
+*/
+
+booky.delete("/publication/delete/book/:isbn/:pubID", (request, response) => {
+    
+    //update Boom array in Publication database
+
+    database.publications.forEach((publication) => {
+        if (publication.id === parseInt(request.params.pubID)) {
+            const newBookList = publication.books.filter((book) => book !== request.params.isbn);
+            publication.books = newBookList;
+            return;
+        } else {
+            console.log("Not found");
+        }
+
+
+    });
+
+    // update the Book database
+    database.books.forEach((book) => {
+        if (book.ISBN === request.params.isbn) {
+            book.publications = 0;
+            return;
+        }
+    });
+
+    return response.json({ books: database.books, publications: database.publications });
+});
+
+
+
 
 
 
@@ -308,7 +406,7 @@ booky.put("/publications/update/book/:isbn", (request, response) => {
 
 
 // Server Started !!!!!!!
-booky.listen(3000, () => console.log(" Server Started !!!!! "));
+booky.listen(3000, () => console.log(" Server Started !!!!! 🚀🚀 "));
 
 
 
