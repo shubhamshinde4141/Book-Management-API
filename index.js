@@ -290,6 +290,7 @@ booky.put("/publications/update/book/:isbn", (request, response) => {
     database.books.forEach((book) => {
         if (book.ISBN === request.params.isbn) {
             book.publications = request.body.pubID;
+            return;
         }
     });
 
