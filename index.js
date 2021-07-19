@@ -1,8 +1,14 @@
+// Import DOTENV and config it  ( IMportant Step ) 
+require("dotenv").config();
+
+
 const { response, json, request } = require("express");
 const express = require("express");
 
 //Import Database 
 const database = require("./database");
+const mongoose = require('mongoose');
+
 
 
 // Initialize Express
@@ -11,6 +17,25 @@ const booky = express();
 
 //Configure Express
 booky.use(express.json());
+
+
+
+// Establish the connection to MangoDB Database
+mongoose.connect(process.env.MONGO_URL,
+    {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        useFindAndModify: false,
+        useCreateIndex: true
+    }
+).then(() => console.log("Connection Established !!!!!!!!"));
+
+
+
+//////////////////////////////////  ALL METHODS //////////////////////////////////
+
+
+
 
 
 
@@ -73,6 +98,8 @@ booky.get("/c/:category", (request, response) => {
 });
 
 
+
+
 /*
 Route :             /ar
 Description :       Get List of Authors based on Author Name
@@ -95,6 +122,8 @@ booky.get("/ar/:authorname", (request, response) => {
 });
 
 
+
+
 /*
 Route :             /author/book/
 Description :       Get List of Authors based on Book ISBN Number
@@ -113,6 +142,7 @@ booky.get("/author/book/:isbn", (request, response) => {
     return response.json({ authors:  getSpecificAuthor });
 
 });
+
 
 
 

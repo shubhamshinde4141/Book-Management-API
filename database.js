@@ -55,12 +55,3 @@ const publications = [
 // This statement is used beacause we have to use this data in the other files (API). So we have to import this files wherever we want.
 module.exports = { books, author, publications };
 
-/*{
-    "authors": [
-        {
-            "id": 2,
-            "name": "Yash",
-            "books": ["12345Book"]
-        }
-                ]
-}*/
