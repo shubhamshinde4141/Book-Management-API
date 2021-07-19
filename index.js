@@ -6,8 +6,15 @@ const { response, json, request } = require("express");
 const express = require("express");
 
 //Import Database 
-const database = require("./database");
+const database = require("./database/database");
 const mongoose = require('mongoose');
+
+// Import All Models  ( Book , Author , Publication)
+const BookModels = require("./database/book");
+const AuthorModels = require("./database/author");
+const PublicationModels = require("./database/publication");
+
+
 
 
 
@@ -48,8 +55,10 @@ Access :            PUBLIC
 Parameter :         NONE
 Methods :           GET
 */ 
-booky.get("/", (request, response) => {
-    return response.json({ books: database.books });
+booky.get("/", async (request, response) => {
+
+    const getAllBooks = await BookModels.find();
+    return response.json({ getAllBooks });
 });
 
 
@@ -62,15 +71,23 @@ Access :            PUBLIC
 Parameter :         ISBN Number
 Methods :           GET
 */ 
-booky.get("/is/:isbn", (request, response) => {
-    const getSpecificBook = database.books.filter((book) => book.ISBN === request.params.isbn);
+booky.get("/is/:isbn", async (request, response) => {
 
+    // Code to deal with MongoDB
+    const getSpecificBook = await BookModels.findOne({ ISBN: request.params.isbn });
 
-    if (getSpecificBook.length == 0) {
+    if (!getSpecificBook) {
         return response.json({ error: `No Book Found Of ISBN ${request.params.isbn}` });
     }
 
     return response.json({ book: getSpecificBook });
+
+
+
+    //const getSpecificBook = database.books.filter((book) => book.ISBN === request.params.isbn);
+    /*if (getSpecificBook.length == 0) {
+        return response.json({ error: `No Book Found Of ISBN ${request.params.isbn}` });
+    }*/
 
 });
 
@@ -85,13 +102,15 @@ Access :            PUBLIC
 Parameter :         Category of Book
 Methods :           GET
 */
-booky.get("/c/:category", (request, response) => {
-    const getSpecificBook = database.books.filter((book) => book.category.includes(request.params.category));
-
-
-    if (getSpecificBook.length == 0) {
+booky.get("/c/:category", async (request, response) => {
+    //const getSpecificBook = database.books.filter((book) => book.category.includes(request.params.category));
+    /*if (getSpecificBook.length == 0) {
         return response.json({ error: `No Book Found Of Category ${request.params.category}` });
-    }
+    }*/
+
+
+    // Code to deal with MongoDB
+    const getSpecificBook = await BookModels.findOne({ category: request.params.category });
 
     return response.json({ book: getSpecificBook });
 
@@ -107,17 +126,18 @@ Access :            PUBLIC
 Parameter :         Author Name 
 Methods :           GET
 */
-booky.get("/ar/:authorname", (request, response) => {
-    const getSpecificBook = database.author.filter((authors) => authors.name === request.params.authorname);
-    
+booky.get("/ar/:authorname", async (request, response) => {
+   
+   // Code To deal with MongoDB  
+    const getSpecificAuthor = await AuthorModels.findOne({ name: request.params.authorname });
+    return response.json({ authors: getSpecificAuthor });
 
 
-    if (getSpecificBook.length == 0) {
+    //const getSpecificBook = database.author.filter((authors) => authors.name === request.params.authorname);
+    /*if (getSpecificBook.length == 0) {
         return response.json({ error: `No Author Found who has name ${request.params.authorname}` });
-    }
+    }*/
     //const authorBooks = getSpecificBook.author.books;
-
-    return response.json({ authors: getSpecificBook });
 
 });
 
@@ -131,15 +151,19 @@ Access :            PUBLIC
 Parameter :         ISBN Number 
 Methods :           GET
 */
-booky.get("/author/book/:isbn", (request, response) => {
-    const getSpecificAuthor = database.author.filter((author) => author.books.includes(request.params.isbn));
-
-
+booky.get("/author/book/:isbn", async (request, response) => {
+    
+    // Code to deal with MongoDB
+    const getSpecificAuthor = await AuthorModels.findOne({ books: request.params.isbn });
+    return response.json({ authors: getSpecificAuthor });
+    
+    
+    /*const getSpecificAuthor = database.author.filter((author) => author.books.includes(request.params.isbn));
     if ( getSpecificAuthor.length == 0) {
         return response.json({ error: `No Author Found who have Book ISBN as ${request.params.isbn}` });
     }
 
-    return response.json({ authors:  getSpecificAuthor });
+    return response.json({ authors:  getSpecificAuthor });*/
 
 });
 
@@ -155,15 +179,20 @@ Parameter :         ISBN Number
 Methods :           GET
 */
 
-booky.get("/book/publication/:isbn", (request, response) => {
-    const getSpecificPublication = database.publications.filter((publication) => publication.books.includes(request.params.isbn));
-
-
+booky.get("/book/publication/:isbn", async (request, response) => {
+   /*const getSpecificPublication = database.publications.filter((publication) => publication.books.includes(request.params.isbn));
     if ( getSpecificPublication.length == 0) {
         return response.json({ error: `No Publication Found who have Book ISBN as ${request.params.isbn}` });
     }
 
-    return response.json({ publications:  getSpecificPublication });
+    return response.json({ publications:  getSpecificPublication });*/
+
+
+    // Code To add data into MongoDB
+    const getSpecificPublication = await PublicationModels.findOne({ books: request.params.isbn });
+    return response.json({ publication: getSpecificPublication });
+
+    
 
 });
 
@@ -181,10 +210,15 @@ Access :            PUBLIC
 Parameter :         NONE
 Methods :           POST
 */
-booky.post("/book/new", (request, response) => {
+booky.post("/book/new", async (request, response) => {
     const { newBook } = request.body;
-    database.books.push(newBook);
-    return response.json({ books: database.books });
+
+    //Add into mogoDB database
+    const addNewBook = await BookModels.create(newBook);
+    return response.json({ books: addNewBook, message: "New Book Added !!" });
+
+    //database.books.push(newBook);
+   // return response.json({ books: database.books });
 });
 
 
@@ -197,10 +231,15 @@ Access :            PUBLIC
 Parameter :         NONE
 Methods :           POST
 */
-booky.post("/author/new", (request, response) => {
+booky.post("/author/new", async (request, response) => {
     const { newAuthor } = request.body;
-    database.author.push(newAuthor);
-    return response.json({ authors: database.author });
+     //database.author.push(newAuthor);
+    //return response.json({ authors: database.author });
+
+    // Code to Add into mongoDB Database
+    const addNewAuthor = await AuthorModels.create(newAuthor);
+    return response.json({ books: addNewAuthor, message: "New Author Added !!" });
+   
 });
 
 
@@ -213,10 +252,18 @@ Access :            PUBLIC
 Parameter :         NONE
 Methods :           POST
 */
-booky.post("/publication/new", (request, response) => {
+booky.post("/publication/new", async (request, response) => {
     const { newPublication } = request.body;
-    database.publications.push(newPublication);
-    return response.json({ publicationss: database.publications });
+
+    
+    //database.publications.push(newPublication);
+    //return response.json({ publicationss: database.publications });
+
+
+    // Code TO add data into MongoDB
+    const addNewPublication = await PublicationModels.create(newPublication);
+    return response.json({ publications: addNewPublication, message: "New Publication Added !! " });
+    
 });
 
 
