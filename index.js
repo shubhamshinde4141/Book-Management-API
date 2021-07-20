@@ -532,11 +532,31 @@ Parameter :         book ISBN , Publication ID
 Methods :           DELETE
 */
 
-booky.delete("/publication/delete/book/:isbn/:pubID", (request, response) => {
+booky.delete("/publication/delete/book/:isbn/:pubID", async (request, response) => {
     
-    //update Boom array in Publication database
+   //update Book array in Publication database
+    // Code to deal with MongoDB
 
-    database.publications.forEach((publication) => {
+    const updateBookInPublication = await PublicationModels.findOneAndUpdate(
+        {
+            id: parseInt(request.params.pubID),
+        },
+        {
+            $pull: {
+                books: request.params.isbn,
+            }
+            
+        },
+        {
+            new: true,
+        }
+
+    );
+   
+   
+   
+    //update Book array in Publication database
+    /*database.publications.forEach((publication) => {
         if (publication.id === parseInt(request.params.pubID)) {
             const newBookList = publication.books.filter((book) => book !== request.params.isbn);
             publication.books = newBookList;
@@ -546,17 +566,33 @@ booky.delete("/publication/delete/book/:isbn/:pubID", (request, response) => {
         }
 
 
-    });
+    });*/
 
     // update the Book database
-    database.books.forEach((book) => {
+   /* database.books.forEach((book) => {
         if (book.ISBN === request.params.isbn) {
             book.publications = 0;
             return;
         }
-    });
+    });*/
 
-    return response.json({ books: database.books, publications: database.publications });
+
+    // Update the Book database
+    const updatePublicationInBook = await BookModels.findOneAndUpdate(
+        {
+            ISBN: request.params.isbn,
+        },
+        {
+            $pull: {
+                publications: parseInt(request.params.pubID),
+            },
+        },
+        {
+            new: true,
+        }
+    );
+
+    return response.json({ books: updatePublicationInBook, publications: updateBookInPublication });
 });
 
 
