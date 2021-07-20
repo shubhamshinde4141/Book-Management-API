@@ -281,14 +281,30 @@ Parameter :         ISBN Number
 Methods :           PUT
 */
 
-booky.put("/book/update/title/:isbn", (request, response) => {
-    database.books.forEach((book) => {
+booky.put("/book/update/title/:isbn", async (request, response) => {
+
+    // Code Deal With MongoDB (Update Book Title)
+    const updatedBook = await BookModels.findOneAndUpdate(
+        {
+            ISBN: request.params.isbn,
+        },
+        {
+            title: request.body.bookTitle,
+        },
+        {
+            new: true,
+        }
+    );
+    return response.json({ books: updatedBook });
+
+
+    /*database.books.forEach((book) => {
         if (book.ISBN === request.params.isbn) {
             book.title = request.body.newBookTitle;
             return;
         }
-    });
-    return response.json({ books: database.books });
+    });*/
+   // return response.json({ books: database.books });
 });
 
 
