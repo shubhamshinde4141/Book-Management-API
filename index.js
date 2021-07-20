@@ -317,10 +317,42 @@ Parameter :         ISBN Number , authorID
 Methods :           PUT
 */
 
-booky.put("/book/update/author/:isbn/:authorID", (request, response) => {
+booky.put("/book/update/author/:isbn/:authorID", async (request, response) => {
 
-    // Update Book Database 
-    database.books.forEach((book) => {
+    // Update Book Database ( Code deal with MongoDB)
+    const updateBookAuthor = await BookModels.findOneAndUpdate(
+        {
+            ISBN: request.params.isbn,
+        },
+        {
+            $addToSet: {
+                author: request.params.authorID,
+            },
+        },
+        {
+            new: true,
+        }
+    );
+
+    // Update Author database ( Code to deal with MongoDB)
+    const updateAuthor = await AuthorModels.findOneAndUpdate(
+        {
+            id: request.params.authorID,
+        },
+        {
+            $addToSet: {
+                books: request.params.isbn,  // ( addTOSet Ensure that the data should not be duplicated. If we enter same data it will not allow it)
+            }
+           
+        },
+        {
+            new: true,
+        }
+
+    );
+     
+    
+    /*database.books.forEach((book) => {
         if (book.ISBN === request.params.isbn) {
             return book.author.push(parseInt(request.params.authorID));
         }
@@ -331,9 +363,9 @@ booky.put("/book/update/author/:isbn/:authorID", (request, response) => {
         if (author.id === parseInt(request.params.authorID)) {
             return author.books.push(request.params.isbn);
         }
-    });
+    });*/
 
-    return response.json({ books: database.books, authors: database.author });
+    return response.json({ books: updateBookAuthor, authors: updateAuthor });
 });
 
 
@@ -402,12 +434,22 @@ Parameter :         book ISBN
 Methods :           DELETE
 */
 
-booky.delete("/book/delete/:isbn", (request, response) => {
-    const updatedBookDatabase = database.books.filter((book) => 
+booky.delete("/book/delete/:isbn", async (request, response) => {
+// Code to deal with MongoDB
+    const updatedBookDatabase = await BookModels.findOneAndDelete(
+        {
+            ISBN: request.params.isbn,
+        }
+    );
+    return response.json({ books: updatedBookDatabase });
+
+
+
+    /*const updatedBookDatabase = database.books.filter((book) => 
         book.ISBN !== request.params.isbn
     );
     database.books = updatedBookDatabase;
-    return response.json({ books: database.books });
+    return response.json({ books: database.books });*/
 });
 
 
@@ -420,11 +462,25 @@ Parameter :         book ISBN , author ID
 Methods :           DELETE
 */
 
-booky.delete("/book/delete/author/:isbn/:authorID", (request, response) => {
+booky.delete("/book/delete/author/:isbn/:authorID", async (request, response) => {
+   
+    // Code To deal with MongoDB
+    const updateBookData = await BookModels.findOneAndUpdate(
+        {
+            ISBN: request.params.isbn,
+        },
+        {
+            $pull: {
+                author: parseInt(request.params.authorID),
+            },
+        },
+        {
+            new: true,
+        }
+    );
     
     //update author array in Book database
-
-    database.books.forEach((book) => {
+    /*database.books.forEach((book) => {
         if (book.ISBN === request.params.isbn) {
             const newAuthorList = book.author.filter((author) => author !== parseInt(request.params.authorID));
             book.author = newAuthorList;
@@ -434,18 +490,36 @@ booky.delete("/book/delete/author/:isbn/:authorID", (request, response) => {
         }
 
 
-    });
+    });*/
+
 
     // update the author database
-    database.author.forEach((author) => {
+    /*database.author.forEach((author) => {
         if (author.id === parseInt(request.params.authorID)) {
             const newBookList = author.books.filter((book) => book !== request.params.isbn);
             author.books = newBookList;
             return;
         }
-    });
+    });*/
 
-    return response.json({ books: database.books, author: database.author });
+
+    // Update the author database
+    const updateAuthorData = await AuthorModels.findOneAndUpdate(
+        {
+            id: parseInt(request.params.authorID),
+        },
+        {
+            $pull: {
+                books: request.params.isbn,
+            },
+        },
+        {
+            new: true,
+        }
+    );
+
+
+    return response.json({ books: updateBookData, author:  updateAuthorData });
 });
 
 
