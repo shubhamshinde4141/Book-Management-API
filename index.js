@@ -16,6 +16,11 @@ const PublicationModels = require("./database/publication");
 
 
 
+// Microservices  Routes 
+const BooksApi = require("./API/Book");
+
+
+
 
 
 // Initialize Express
@@ -38,6 +43,9 @@ mongoose.connect(process.env.MONGO_URL,
 ).then(() => console.log("Connection Established !!!!!!!!"));
 
 
+// Initializing Microservices 
+booky.use("/book", BooksApi);
+
 
 //////////////////////////////////  ALL METHODS //////////////////////////////////
 
@@ -54,12 +62,12 @@ Description :       Get Data of all Books
 Access :            PUBLIC 
 Parameter :         NONE
 Methods :           GET
-*/ 
+
 booky.get("/", async (request, response) => {
 
     const getAllBooks = await BookModels.find();
     return response.json({ getAllBooks });
-});
+});*/
 
 
 
@@ -70,7 +78,7 @@ Description :       Get Data of books based on ISBN
 Access :            PUBLIC 
 Parameter :         ISBN Number
 Methods :           GET
-*/ 
+
 booky.get("/is/:isbn", async (request, response) => {
 
     // Code to deal with MongoDB
@@ -85,11 +93,11 @@ booky.get("/is/:isbn", async (request, response) => {
 
 
     //const getSpecificBook = database.books.filter((book) => book.ISBN === request.params.isbn);
-    /*if (getSpecificBook.length == 0) {
-        return response.json({ error: `No Book Found Of ISBN ${request.params.isbn}` });
-    }*/
+    //if (getSpecificBook.length == 0) {
+      //  return response.json({ error: `No Book Found Of ISBN ${request.params.isbn}` });
+    //}
 
-});
+});*/ 
 
 
 
@@ -101,12 +109,13 @@ Description :       Get Data of books based on Category
 Access :            PUBLIC 
 Parameter :         Category of Book
 Methods :           GET
-*/
+
 booky.get("/c/:category", async (request, response) => {
+
     //const getSpecificBook = database.books.filter((book) => book.category.includes(request.params.category));
-    /*if (getSpecificBook.length == 0) {
-        return response.json({ error: `No Book Found Of Category ${request.params.category}` });
-    }*/
+    //if (getSpecificBook.length == 0) {
+      //  return response.json({ error: `No Book Found Of Category ${request.params.category}` });
+    //}
 
 
     // Code to deal with MongoDB
@@ -114,7 +123,7 @@ booky.get("/c/:category", async (request, response) => {
 
     return response.json({ book: getSpecificBook });
 
-});
+});*/
 
 
 
@@ -209,7 +218,7 @@ Description :       Add New Book
 Access :            PUBLIC 
 Parameter :         NONE
 Methods :           POST
-*/
+
 booky.post("/book/new", async (request, response) => {
     const { newBook } = request.body;
 
@@ -219,7 +228,7 @@ booky.post("/book/new", async (request, response) => {
 
     //database.books.push(newBook);
    // return response.json({ books: database.books });
-});
+});*/
 
 
 
@@ -315,7 +324,7 @@ Description :       Update Book Title
 Access :            PUBLIC 
 Parameter :         ISBN Number , authorID
 Methods :           PUT
-*/
+
 
 booky.put("/book/update/author/:isbn/:authorID", async (request, response) => {
 
@@ -352,7 +361,7 @@ booky.put("/book/update/author/:isbn/:authorID", async (request, response) => {
     );
      
     
-    /*database.books.forEach((book) => {
+    database.books.forEach((book) => {
         if (book.ISBN === request.params.isbn) {
             return book.author.push(parseInt(request.params.authorID));
         }
@@ -363,10 +372,10 @@ booky.put("/book/update/author/:isbn/:authorID", async (request, response) => {
         if (author.id === parseInt(request.params.authorID)) {
             return author.books.push(request.params.isbn);
         }
-    });*/
+    });
 
     return response.json({ books: updateBookAuthor, authors: updateAuthor });
-});
+});*/
 
 
 /// Update Publication (name) using its ID
@@ -432,7 +441,7 @@ Description :       Delete Book
 Access :            PUBLIC 
 Parameter :         book ISBN
 Methods :           DELETE
-*/
+
 
 booky.delete("/book/delete/:isbn", async (request, response) => {
 // Code to deal with MongoDB
@@ -445,12 +454,12 @@ booky.delete("/book/delete/:isbn", async (request, response) => {
 
 
 
-    /*const updatedBookDatabase = database.books.filter((book) => 
+    const updatedBookDatabase = database.books.filter((book) => 
         book.ISBN !== request.params.isbn
     );
     database.books = updatedBookDatabase;
-    return response.json({ books: database.books });*/
-});
+    return response.json({ books: database.books });
+});*/
 
 
 // Delete Author from a book
