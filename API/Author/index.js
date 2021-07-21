@@ -23,9 +23,16 @@ Methods :           GET
 */
 Router.get("/ar/:authorname", async (request, response) => {
    
-    // Code To deal with MongoDB  
+    try {
+        // Code To deal with MongoDB  
      const getSpecificAuthor = await AuthorModels.findOne({ name: request.params.authorname });
      return response.json({ authors: getSpecificAuthor });
+        
+    } catch (error) {
+        return response.json({ Error: error.message });
+    }
+
+    
  
  
      //const getSpecificBook = database.author.filter((authors) => authors.name === request.params.authorname);
@@ -47,10 +54,17 @@ Parameter :         ISBN Number
 Methods :           GET
 */
 Router.get("/book/:isbn", async (request, response) => {
-    
-    // Code to deal with MongoDB
+
+    try {
+        // Code to deal with MongoDB
     const getSpecificAuthor = await AuthorModels.findOne({ books: request.params.isbn });
     return response.json({ authors: getSpecificAuthor });
+        
+    } catch (error) {
+        return response.json({ Error: error.message });
+    }
+    
+   
     
     
     /*const getSpecificAuthor = database.author.filter((author) => author.books.includes(request.params.isbn));
@@ -74,15 +88,24 @@ Parameter :         NONE
 Methods :           POST
 */
 Router.post("/new", async (request, response) => {
-    const { newAuthor } = request.body;
-     //database.author.push(newAuthor);
-    //return response.json({ authors: database.author });
 
+    try {
+        const { newAuthor } = request.body;
     // Code to Add into mongoDB Database
     const addNewAuthor = await AuthorModels.create(newAuthor);
     return response.json({ books: addNewAuthor, message: "New Author Added !!" });
+        
+    } catch (error) {
+        return response.json({ Error: error.message });
+    }
+    
+
+    //database.author.push(newAuthor);
+    //return response.json({ authors: database.author });
    
 });
+
+
 
 // Delete Author from a book
 /*
@@ -95,7 +118,8 @@ Methods :           DELETE
 
 Router.delete("/book/delete/author/:isbn/:authorID", async (request, response) => {
    
-    // Code To deal with MongoDB
+    try {
+         // Code To deal with MongoDB
     const updateBookData = await BookModels.findOneAndUpdate(
         {
             ISBN: request.params.isbn,
@@ -110,7 +134,32 @@ Router.delete("/book/delete/author/:isbn/:authorID", async (request, response) =
         }
     );
     
-    //update author array in Book database
+    // Update the author database
+    const updateAuthorData = await AuthorModels.findOneAndUpdate(
+        {
+            id: parseInt(request.params.authorID),
+        },
+        {
+            $pull: {
+                books: request.params.isbn,
+            },
+        },
+        {
+            new: true,
+        }
+    );
+
+
+    return response.json({ books: updateBookData, author: updateAuthorData });
+        
+    } catch (error) {
+        return response.json({ Error: error.message });
+    }
+
+   
+
+
+     //update author array in Book database
     /*database.books.forEach((book) => {
         if (book.ISBN === request.params.isbn) {
             const newAuthorList = book.author.filter((author) => author !== parseInt(request.params.authorID));
@@ -133,24 +182,6 @@ Router.delete("/book/delete/author/:isbn/:authorID", async (request, response) =
         }
     });*/
 
-
-    // Update the author database
-    const updateAuthorData = await AuthorModels.findOneAndUpdate(
-        {
-            id: parseInt(request.params.authorID),
-        },
-        {
-            $pull: {
-                books: request.params.isbn,
-            },
-        },
-        {
-            new: true,
-        }
-    );
-
-
-    return response.json({ books: updateBookData, author:  updateAuthorData });
 });
 
 //Export Router

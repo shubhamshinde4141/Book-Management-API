@@ -30,7 +30,8 @@ Methods :           GET
 */ 
 Router.get("/is/:isbn", async (request, response) => {
 
-    // Code to deal with MongoDB
+    try {
+        // Code to deal with MongoDB
     const getSpecificBook = await BookModels.findOne({ ISBN: request.params.isbn });
 
     if (!getSpecificBook) {
@@ -38,6 +39,10 @@ Router.get("/is/:isbn", async (request, response) => {
     }
 
     return response.json({ book: getSpecificBook });
+    } catch (error) {
+        return response.json({ Error: error.message });
+    }
+    
 
 
 
@@ -59,16 +64,23 @@ Parameter :         Category of Book
 Methods :           GET
 */
 Router.get("/c/:category", async (request, response) => {
+    
+    try {
+        // Code to deal with MongoDB
+    const getSpecificBook = await BookModels.findOne({ category: request.params.category });
+
+    return response.json({ book: getSpecificBook });
+        
+    } catch (error) {
+        return response.json({ Error: error.message });
+    }
+
+    
+
     //const getSpecificBook = database.books.filter((book) => book.category.includes(request.params.category));
     /*if (getSpecificBook.length == 0) {
         return response.json({ error: `No Book Found Of Category ${request.params.category}` });
     }*/
-
-
-    // Code to deal with MongoDB
-    const getSpecificBook = await BookModels.findOne({ category: request.params.category });
-
-    return response.json({ book: getSpecificBook });
 
 });
 
@@ -85,11 +97,17 @@ Parameter :         NONE
 Methods :           POST
 */
 Router.post("/new", async (request, response) => {
+    try {
+    
     const { newBook } = request.body;
-
     //Add into mogoDB database
     const addNewBook = await BookModels.create(newBook);
     return response.json({ books: addNewBook, message: "New Book Added !!" });
+        
+    } catch (error) {
+        return response.json({ Error: error.message });
+    }
+    
 
     //database.books.push(newBook);
    // return response.json({ books: database.books });
@@ -110,7 +128,9 @@ Methods :           PUT
 
 Router.put("/update/title/:isbn", async (request, response) => {
 
-    // Code Deal With MongoDB (Update Book Title)
+
+    try {
+         // Code Deal With MongoDB (Update Book Title)
     const updatedBook = await BookModels.findOneAndUpdate(
         {
             ISBN: request.params.isbn,
@@ -124,6 +144,10 @@ Router.put("/update/title/:isbn", async (request, response) => {
     );
     return response.json({ books: updatedBook });
 
+    } catch (error) {
+        return response.json({ Error: error.message }); 
+    }
+   
 
     /*database.books.forEach((book) => {
         if (book.ISBN === request.params.isbn) {
@@ -149,7 +173,8 @@ Methods :           PUT
 
 Router.put("/update/author/:isbn/:authorID", async (request, response) => {
 
-    // Update Book Database ( Code deal with MongoDB)
+    try {
+        // Update Book Database ( Code deal with MongoDB)
     const updateBookAuthor = await BookModels.findOneAndUpdate(
         {
             ISBN: request.params.isbn,
@@ -181,8 +206,14 @@ Router.put("/update/author/:isbn/:authorID", async (request, response) => {
 
     );
      
+        return response.json({ books: updateBookAuthor, authors: updateAuthor });
+        
+    } catch (error) {
+        return response.json({ Error: error.message }); 
+    }
     
-    /*database.books.forEach((book) => {
+
+     /*database.books.forEach((book) => {
         if (book.ISBN === request.params.isbn) {
             return book.author.push(parseInt(request.params.authorID));
         }
@@ -194,8 +225,6 @@ Router.put("/update/author/:isbn/:authorID", async (request, response) => {
             return author.books.push(request.params.isbn);
         }
     });*/
-
-    return response.json({ books: updateBookAuthor, authors: updateAuthor });
 });
 
 
@@ -212,13 +241,18 @@ Methods :           DELETE
 */
 
 Router.delete("/delete/:isbn", async (request, response) => {
-    // Code to deal with MongoDB
-        const updatedBookDatabase = await BookModels.findOneAndDelete(
+    try {
+         // Code to deal with MongoDB
+         const updatedBookDatabase = await BookModels.findOneAndDelete(
             {
                 ISBN: request.params.isbn,
             }
         );
         return response.json({ books: updatedBookDatabase });
+    } catch (error) {
+        return response.json({ Error: error.message });
+    }
+   
     
     
     
