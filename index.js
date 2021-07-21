@@ -10,16 +10,16 @@ const database = require("./database/database");
 const mongoose = require('mongoose');
 
 // Import All Models  ( Book , Author , Publication)
-const BookModels = require("./database/book");
+/*const BookModels = require("./database/book");
 const AuthorModels = require("./database/author");
-const PublicationModels = require("./database/publication");
+const PublicationModels = require("./database/publication");*/
 
 
 
 // Microservices  Routes 
-const BooksApi = require("./API/Book");
-
-
+const BooksApi = require("./API/Book");  // For Book
+const AuthorsApi = require("./API/Author"); //For Author
+const PublicationsApi = require("./API/Publication"); // For Publication
 
 
 
@@ -29,7 +29,6 @@ const booky = express();
 
 //Configure Express
 booky.use(express.json());
-
 
 
 // Establish the connection to MangoDB Database
@@ -43,14 +42,44 @@ mongoose.connect(process.env.MONGO_URL,
 ).then(() => console.log("Connection Established !!!!!!!!"));
 
 
-// Initializing Microservices 
-booky.use("/book", BooksApi);
 
+// Initializing Microservices  
+//(This step is done because here we decide what will be the prefixes given.So we can use this prefixes in respective files)
+booky.use("/book", BooksApi); // For Book
+
+booky.use("/author", AuthorsApi); // For Author
+
+booky.use("/publication", PublicationsApi); // For Publication
+
+// Server Started !!!!!!!
+booky.listen(3000, () => console.log(" Server Started !!!!! 🚀🚀 "));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Below code is for Database which is in dabase.js (locally stored database in JSON Format)
+// Also it have code for MongoDB operations ( I mentioned whenever there is a MongoDB Code )
 
 //////////////////////////////////  ALL METHODS //////////////////////////////////
-
-
-
 
 
 
@@ -134,7 +163,7 @@ Description :       Get List of Authors based on Author Name
 Access :            PUBLIC 
 Parameter :         Author Name 
 Methods :           GET
-*/
+
 booky.get("/ar/:authorname", async (request, response) => {
    
    // Code To deal with MongoDB  
@@ -143,12 +172,12 @@ booky.get("/ar/:authorname", async (request, response) => {
 
 
     //const getSpecificBook = database.author.filter((authors) => authors.name === request.params.authorname);
-    /*if (getSpecificBook.length == 0) {
-        return response.json({ error: `No Author Found who has name ${request.params.authorname}` });
-    }*/
+    //if (getSpecificBook.length == 0) {
+      //  return response.json({ error: `No Author Found who has name ${request.params.authorname}` });
+    //}
     //const authorBooks = getSpecificBook.author.books;
 
-});
+});*/
 
 
 
@@ -160,50 +189,50 @@ Access :            PUBLIC
 Parameter :         ISBN Number 
 Methods :           GET
 */
-booky.get("/author/book/:isbn", async (request, response) => {
+// booky.get("/author/book/:isbn", async (request, response) => {
     
-    // Code to deal with MongoDB
-    const getSpecificAuthor = await AuthorModels.findOne({ books: request.params.isbn });
-    return response.json({ authors: getSpecificAuthor });
+//     // Code to deal with MongoDB
+//     const getSpecificAuthor = await AuthorModels.findOne({ books: request.params.isbn });
+//     return response.json({ authors: getSpecificAuthor });
     
     
-    /*const getSpecificAuthor = database.author.filter((author) => author.books.includes(request.params.isbn));
-    if ( getSpecificAuthor.length == 0) {
-        return response.json({ error: `No Author Found who have Book ISBN as ${request.params.isbn}` });
-    }
+//     /*const getSpecificAuthor = database.author.filter((author) => author.books.includes(request.params.isbn));
+//     if ( getSpecificAuthor.length == 0) {
+//         return response.json({ error: `No Author Found who have Book ISBN as ${request.params.isbn}` });
+//     }
 
-    return response.json({ authors:  getSpecificAuthor });*/
+//     return response.json({ authors:  getSpecificAuthor });*/
 
-});
-
-
+// });
 
 
-//   Get a list of publications by using ISBN of a book
-/*
-Route :             /book/publication
-Description :       Get List of Publications based on Book ISBN Number
-Access :            PUBLIC 
-Parameter :         ISBN Number 
-Methods :           GET
-*/
-
-booky.get("/book/publication/:isbn", async (request, response) => {
-   /*const getSpecificPublication = database.publications.filter((publication) => publication.books.includes(request.params.isbn));
-    if ( getSpecificPublication.length == 0) {
-        return response.json({ error: `No Publication Found who have Book ISBN as ${request.params.isbn}` });
-    }
-
-    return response.json({ publications:  getSpecificPublication });*/
 
 
-    // Code To add data into MongoDB
-    const getSpecificPublication = await PublicationModels.findOne({ books: request.params.isbn });
-    return response.json({ publication: getSpecificPublication });
+// //   Get a list of publications by using ISBN of a book
+// /*
+// Route :             /book/publication
+// Description :       Get List of Publications based on Book ISBN Number
+// Access :            PUBLIC 
+// Parameter :         ISBN Number 
+// Methods :           GET
+// */
+
+// booky.get("/book/publication/:isbn", async (request, response) => {
+//    /*const getSpecificPublication = database.publications.filter((publication) => publication.books.includes(request.params.isbn));
+//     if ( getSpecificPublication.length == 0) {
+//         return response.json({ error: `No Publication Found who have Book ISBN as ${request.params.isbn}` });
+//     }
+
+//     return response.json({ publications:  getSpecificPublication });*/
+
+
+//     // Code To add data into MongoDB
+//     const getSpecificPublication = await PublicationModels.findOne({ books: request.params.isbn });
+//     return response.json({ publication: getSpecificPublication });
 
     
 
-});
+// });
 
 
 
@@ -232,48 +261,48 @@ booky.post("/book/new", async (request, response) => {
 
 
 
-//  Add New Author
-/*
-Route :             /author/new
-Description :       Add New Author
-Access :            PUBLIC 
-Parameter :         NONE
-Methods :           POST
-*/
-booky.post("/author/new", async (request, response) => {
-    const { newAuthor } = request.body;
-     //database.author.push(newAuthor);
-    //return response.json({ authors: database.author });
+// //  Add New Author
+// /*
+// Route :             /author/new
+// Description :       Add New Author
+// Access :            PUBLIC 
+// Parameter :         NONE
+// Methods :           POST
+// */
+// booky.post("/author/new", async (request, response) => {
+//     const { newAuthor } = request.body;
+//      //database.author.push(newAuthor);
+//     //return response.json({ authors: database.author });
 
-    // Code to Add into mongoDB Database
-    const addNewAuthor = await AuthorModels.create(newAuthor);
-    return response.json({ books: addNewAuthor, message: "New Author Added !!" });
+//     // Code to Add into mongoDB Database
+//     const addNewAuthor = await AuthorModels.create(newAuthor);
+//     return response.json({ books: addNewAuthor, message: "New Author Added !!" });
    
-});
+// });
 
 
 
-//  Add New Publications
-/*
-Route :             /publication/new
-Description :       Add New Publications
-Access :            PUBLIC 
-Parameter :         NONE
-Methods :           POST
-*/
-booky.post("/publication/new", async (request, response) => {
-    const { newPublication } = request.body;
+// //  Add New Publications
+// /*
+// Route :             /publication/new
+// Description :       Add New Publications
+// Access :            PUBLIC 
+// Parameter :         NONE
+// Methods :           POST
+// */
+// booky.post("/publication/new", async (request, response) => {
+//     const { newPublication } = request.body;
 
     
-    //database.publications.push(newPublication);
-    //return response.json({ publicationss: database.publications });
+//     //database.publications.push(newPublication);
+//     //return response.json({ publicationss: database.publications });
 
 
-    // Code TO add data into MongoDB
-    const addNewPublication = await PublicationModels.create(newPublication);
-    return response.json({ publications: addNewPublication, message: "New Publication Added !! " });
+//     // Code TO add data into MongoDB
+//     const addNewPublication = await PublicationModels.create(newPublication);
+//     return response.json({ publications: addNewPublication, message: "New Publication Added !! " });
     
-});
+// });
 
 
 
@@ -281,40 +310,40 @@ booky.post("/publication/new", async (request, response) => {
 // ************* (PUT Method) ************* 
 
 
-/// Update Title of the Book 
-/*
-Route :             /book/update/title
-Description :       Update Book Title
-Access :            PUBLIC 
-Parameter :         ISBN Number
-Methods :           PUT
-*/
+// /// Update Title of the Book 
+// /*
+// Route :             /book/update/title
+// Description :       Update Book Title
+// Access :            PUBLIC 
+// Parameter :         ISBN Number
+// Methods :           PUT
+// */
 
-booky.put("/book/update/title/:isbn", async (request, response) => {
+// booky.put("/book/update/title/:isbn", async (request, response) => {
 
-    // Code Deal With MongoDB (Update Book Title)
-    const updatedBook = await BookModels.findOneAndUpdate(
-        {
-            ISBN: request.params.isbn,
-        },
-        {
-            title: request.body.bookTitle,
-        },
-        {
-            new: true,
-        }
-    );
-    return response.json({ books: updatedBook });
+//     // Code Deal With MongoDB (Update Book Title)
+//     const updatedBook = await BookModels.findOneAndUpdate(
+//         {
+//             ISBN: request.params.isbn,
+//         },
+//         {
+//             title: request.body.bookTitle,
+//         },
+//         {
+//             new: true,
+//         }
+//     );
+//     return response.json({ books: updatedBook });
 
 
-    /*database.books.forEach((book) => {
-        if (book.ISBN === request.params.isbn) {
-            book.title = request.body.newBookTitle;
-            return;
-        }
-    });*/
-   // return response.json({ books: database.books });
-});
+//     /*database.books.forEach((book) => {
+//         if (book.ISBN === request.params.isbn) {
+//             book.title = request.body.newBookTitle;
+//             return;
+//         }
+//     });*/
+//    // return response.json({ books: database.books });
+// });
 
 
 /// Update Author of the Book 
@@ -378,58 +407,58 @@ booky.put("/book/update/author/:isbn/:authorID", async (request, response) => {
 });*/
 
 
-/// Update Publication (name) using its ID
-/*
-Route :             /book/update/publication
-Description :       Update Publication Name
-Access :            PUBLIC 
-Parameter :         Publication ID
-Methods :           PUT
-*/
+// /// Update Publication (name) using its ID
+// /*
+// Route :             /book/update/publication
+// Description :       Update Publication Name
+// Access :            PUBLIC 
+// Parameter :         Publication ID
+// Methods :           PUT
+// */
 
-booky.put("/book/update/publications/:pubID", (request, response) => {
-    database.publications.forEach((publication) => {
-        if (publication.id === parseInt(request.params.pubID)) {
-            publication.name =  request.body.newPublicationName;;
-        }
-        return;
+// booky.put("/book/update/publications/:pubID", (request, response) => {
+//     database.publications.forEach((publication) => {
+//         if (publication.id === parseInt(request.params.pubID)) {
+//             publication.name =  request.body.newPublicationName;;
+//         }
+//         return;
        
-    });
-    return response.json({ publications: database.publications });
-});
+//     });
+//     return response.json({ publications: database.publications });
+// });
 
 
 
 
-///Update/add new book to Publications 
-/*
-Route :             /publications/update/book
-Description :       Update book in publications
-Access :            PUBLIC 
-Parameter :         book ISBN
-Methods :           PUT
-*/
+// ///Update/add new book to Publications 
+// /*
+// Route :             /publications/update/book
+// Description :       Update book in publications
+// Access :            PUBLIC 
+// Parameter :         book ISBN
+// Methods :           PUT
+// */
 
-booky.put("/publications/update/book/:isbn", (request, response) => {
-    //update publication data
-    database.publications.forEach((publication) => {
-        if (publication.id === request.body.pubID) {
-            return publication.books.push(request.params.isbn);
-        }
+// booky.put("/publications/update/book/:isbn", (request, response) => {
+//     //update publication data
+//     database.publications.forEach((publication) => {
+//         if (publication.id === request.body.pubID) {
+//             return publication.books.push(request.params.isbn);
+//         }
 
-    });
+//     });
 
-    //update the book database
+//     //update the book database
 
-    database.books.forEach((book) => {
-        if (book.ISBN === request.params.isbn) {
-            book.publications = request.body.pubID;
-            return;
-        }
-    });
+//     database.books.forEach((book) => {
+//         if (book.ISBN === request.params.isbn) {
+//             book.publications = request.body.pubID;
+//             return;
+//         }
+//     });
 
-    return response.json({ books: database.books, publications: database.publications });
-});
+//     return response.json({ books: database.books, publications: database.publications });
+// });
 
 
 //////// ******* DELETE METHOD ************
@@ -471,141 +500,138 @@ Parameter :         book ISBN , author ID
 Methods :           DELETE
 */
 
-booky.delete("/book/delete/author/:isbn/:authorID", async (request, response) => {
+// booky.delete("/book/delete/author/:isbn/:authorID", async (request, response) => {
    
-    // Code To deal with MongoDB
-    const updateBookData = await BookModels.findOneAndUpdate(
-        {
-            ISBN: request.params.isbn,
-        },
-        {
-            $pull: {
-                author: parseInt(request.params.authorID),
-            },
-        },
-        {
-            new: true,
-        }
-    );
+//     // Code To deal with MongoDB
+//     const updateBookData = await BookModels.findOneAndUpdate(
+//         {
+//             ISBN: request.params.isbn,
+//         },
+//         {
+//             $pull: {
+//                 author: parseInt(request.params.authorID),
+//             },
+//         },
+//         {
+//             new: true,
+//         }
+//     );
     
-    //update author array in Book database
-    /*database.books.forEach((book) => {
-        if (book.ISBN === request.params.isbn) {
-            const newAuthorList = book.author.filter((author) => author !== parseInt(request.params.authorID));
-            book.author = newAuthorList;
-            return;
-        } else {
-            console.log("Not found");
-        }
+//     //update author array in Book database
+//     /*database.books.forEach((book) => {
+//         if (book.ISBN === request.params.isbn) {
+//             const newAuthorList = book.author.filter((author) => author !== parseInt(request.params.authorID));
+//             book.author = newAuthorList;
+//             return;
+//         } else {
+//             console.log("Not found");
+//         }
 
 
-    });*/
+//     });*/
 
 
-    // update the author database
-    /*database.author.forEach((author) => {
-        if (author.id === parseInt(request.params.authorID)) {
-            const newBookList = author.books.filter((book) => book !== request.params.isbn);
-            author.books = newBookList;
-            return;
-        }
-    });*/
+//     // update the author database
+//     /*database.author.forEach((author) => {
+//         if (author.id === parseInt(request.params.authorID)) {
+//             const newBookList = author.books.filter((book) => book !== request.params.isbn);
+//             author.books = newBookList;
+//             return;
+//         }
+//     });*/
 
 
-    // Update the author database
-    const updateAuthorData = await AuthorModels.findOneAndUpdate(
-        {
-            id: parseInt(request.params.authorID),
-        },
-        {
-            $pull: {
-                books: request.params.isbn,
-            },
-        },
-        {
-            new: true,
-        }
-    );
+//     // Update the author database
+//     const updateAuthorData = await AuthorModels.findOneAndUpdate(
+//         {
+//             id: parseInt(request.params.authorID),
+//         },
+//         {
+//             $pull: {
+//                 books: request.params.isbn,
+//             },
+//         },
+//         {
+//             new: true,
+//         }
+//     );
 
 
-    return response.json({ books: updateBookData, author:  updateAuthorData });
-});
+//     return response.json({ books: updateBookData, author:  updateAuthorData });
+// });
 
 
-// Delete boom from Publications
-/*
-Route :             /publication/delete/book
-Description :        Delete boom from Publications 
-Access :            PUBLIC 
-Parameter :         book ISBN , Publication ID
-Methods :           DELETE
-*/
+// // Delete boom from Publications
+// /*
+// Route :             /publication/delete/book
+// Description :        Delete boom from Publications 
+// Access :            PUBLIC 
+// Parameter :         book ISBN , Publication ID
+// Methods :           DELETE
+// */
 
-booky.delete("/publication/delete/book/:isbn/:pubID", async (request, response) => {
+// booky.delete("/publication/delete/book/:isbn/:pubID", async (request, response) => {
     
-   //update Book array in Publication database
-    // Code to deal with MongoDB
+//    //update Book array in Publication database
+//     // Code to deal with MongoDB
 
-    const updateBookInPublication = await PublicationModels.findOneAndUpdate(
-        {
-            id: parseInt(request.params.pubID),
-        },
-        {
-            $pull: {
-                books: request.params.isbn,
-            }
+//     const updateBookInPublication = await PublicationModels.findOneAndUpdate(
+//         {
+//             id: parseInt(request.params.pubID),
+//         },
+//         {
+//             $pull: {
+//                 books: request.params.isbn,
+//             }
             
-        },
-        {
-            new: true,
-        }
+//         },
+//         {
+//             new: true,
+//         }
 
-    );
+//     );
    
    
    
-    //update Book array in Publication database
-    /*database.publications.forEach((publication) => {
-        if (publication.id === parseInt(request.params.pubID)) {
-            const newBookList = publication.books.filter((book) => book !== request.params.isbn);
-            publication.books = newBookList;
-            return;
-        } else {
-            console.log("Not found");
-        }
+//     //update Book array in Publication database
+//     /*database.publications.forEach((publication) => {
+//         if (publication.id === parseInt(request.params.pubID)) {
+//             const newBookList = publication.books.filter((book) => book !== request.params.isbn);
+//             publication.books = newBookList;
+//             return;
+//         } else {
+//             console.log("Not found");
+//         }
 
 
-    });*/
+//     });*/
 
-    // update the Book database
-   /* database.books.forEach((book) => {
-        if (book.ISBN === request.params.isbn) {
-            book.publications = 0;
-            return;
-        }
-    });*/
-
-
-    // Update the Book database
-    const updatePublicationInBook = await BookModels.findOneAndUpdate(
-        {
-            ISBN: request.params.isbn,
-        },
-        {
-            $pull: {
-                publications: parseInt(request.params.pubID),
-            },
-        },
-        {
-            new: true,
-        }
-    );
-
-    return response.json({ books: updatePublicationInBook, publications: updateBookInPublication });
-});
+//     // update the Book database
+//    /* database.books.forEach((book) => {
+//         if (book.ISBN === request.params.isbn) {
+//             book.publications = 0;
+//             return;
+//         }
+//     });*/
 
 
+//     // Update the Book database
+//     const updatePublicationInBook = await BookModels.findOneAndUpdate(
+//         {
+//             ISBN: request.params.isbn,
+//         },
+//         {
+//             $pull: {
+//                 publications: parseInt(request.params.pubID),
+//             },
+//         },
+//         {
+//             new: true,
+//         }
+//     );
 
+//     return response.json({ books: updatePublicationInBook, publications: updateBookInPublication });
+// });
 
 
 
@@ -617,8 +643,10 @@ booky.delete("/publication/delete/book/:isbn/:pubID", async (request, response) 
 
 
 
-// Server Started !!!!!!!
-booky.listen(3000, () => console.log(" Server Started !!!!! 🚀🚀 "));
+
+
+
+
 
 
 
